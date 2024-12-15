@@ -1,0 +1,152 @@
+using System;
+using System.Globalization;
+using System.Text;
+
+
+namespace MobilePhoneApp
+{
+    // Абстрактний клас AbstractPhone, який містить методи для відтворення і зупинки музики
+    public abstract class AbstractPhone
+    {
+        public abstract void PlayMusic(string songName);
+        public abstract void StopMusic();
+    }
+
+
+    // Клас Samson, який успадковує AbstractPhone і реалізує методи PlayMusic та StopMusic
+    public class Samson : AbstractPhone
+    {
+        public override void PlayMusic(string songName)
+        {
+            Console.WriteLine("Playing song " + songName + " from Samson phone");
+        }
+
+
+        public override void StopMusic()
+        {
+            Console.WriteLine("Song stopped from Samson");
+        }
+    }
+
+
+    // Клас Nokla, який успадковує AbstractPhone і реалізує методи PlayMusic та StopMusic
+    public class Nokla : AbstractPhone
+    {
+        public override void PlayMusic(string songName)
+        {
+            Console.WriteLine("Playing song " + songName + " from Nokla phone");
+        }
+
+
+        public override void StopMusic()
+        {
+            Console.WriteLine("Song stopped from Nokla phone");
+        }
+    }
+
+
+    // Абстрактний клас AbstractPhoneFactory, який містить метод ObjectCreator
+    public abstract class AbstractPhoneFactory
+    {
+        public abstract AbstractPhone ObjectCreator();
+    }
+
+
+    // Фабрика для створення об'єктів класу Samson
+    public class CreateFactoryModelSamson : AbstractPhoneFactory
+    {
+        public override AbstractPhone ObjectCreator()
+        {
+            return new Samson();
+        }
+    }
+
+
+    // Фабрика для створення об'єктів класу Nokla
+    public class CreateFactoryModelNokla : AbstractPhoneFactory
+    {
+        public override AbstractPhone ObjectCreator()
+        {
+            return new Nokla();
+        }
+    }
+
+
+    // Клієнтський клас, який використовує фабрику для створення об'єктів телефонів
+    public class Client
+    {
+        // Метод для вибору моделі телефону (Samson або Nokla)
+        public AbstractPhoneFactory ClientMethod(string modelNumber)
+        {
+            switch (modelNumber.ToLower())
+            {
+                case "nokla":
+                    Console.WriteLine("You have selected Nokla phone");
+                    return new CreateFactoryModelNokla();
+
+
+                case "samson":
+                    Console.WriteLine("You have selected Samson phone");
+                    return new CreateFactoryModelSamson();
+
+
+                default:
+                    Console.WriteLine("Invalid Input");
+                    return null;
+            }
+        }
+
+
+        public static void PrintTimeStamp(string name)
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            DateTime localDate = DateTime.Now;
+            var culture = new CultureInfo("ru-RU");
+            Console.WriteLine("   Дата та час компіляції: {0}", localDate.ToString(culture));
+            Console.WriteLine("   Автор: {0}", name);
+        }
+
+
+        // Головний метод
+        static void Main(string[] args)
+        {
+            PrintTimeStamp("matv kud, 2П-22");
+
+
+            Client getClient = new Client();
+
+
+            while (true)
+            {
+                // Введення моделі телефону
+                Console.Write("Please provide the model 'Nokla' Or 'Samson': ");
+                var mobModel = getClient.ClientMethod(Console.ReadLine());
+
+
+                if (mobModel != null)
+                {
+                    Console.WriteLine();
+
+
+                    // Вибір дії: відтворення або зупинка музики
+                    Console.Write("To play music press 1, or press 2 to stop music: ");
+                    char keyData = Console.ReadKey().KeyChar;
+
+
+                    Console.WriteLine();
+
+
+                    if (keyData == '1')
+                        mobModel.ObjectCreator().PlayMusic("Sun raha hai na tu..");
+                    else if (keyData == '2')
+                        mobModel.ObjectCreator().StopMusic();
+                    else
+                        Console.WriteLine("Invalid Input");
+                }
+
+
+                Console.WriteLine();
+            }
+        }
+    }
+}
