@@ -1,0 +1,145 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace marchenko_prak_1._1
+{
+
+    class BlogPostSettings
+    {
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public string Author { get; set; }
+        public DateTime Date { get; set; }
+        public IList<string> Categories { get; set; }
+        public IList<string> Tags { get; set; }
+        public string MetaDescription { get; set; }
+        public string MetadataTitle { get; set; }
+
+    }
+    interface IBlogPostBuilder
+    {
+        void AddTitle(string title);
+        void AddContent(string body);
+        void AddAuthor(string author);
+        void AddDate(DateTime date);
+        void AddCategory(string category);
+        void AddTags(IEnumerable<string> tags);
+        void AddMetadataTitle(string title);
+        void AddMetadataDescription(string description);
+        BlogPostSettings Build();
+    }
+    class BlogPostBuilder : IBlogPostBuilder
+    {
+        private BlogPostSettings _blogPostSettings = new BlogPostSettings();
+
+        public BlogPostBuilder()
+        {
+            _blogPostSettings.Categories = new List<string>();
+            _blogPostSettings.Tags = new List<string>();
+        }
+
+        public void AddTitle(string title)
+        {
+            _blogPostSettings.Title = title;
+        }
+
+        public void AddContent(string body)
+        {
+            _blogPostSettings.Content = body;
+        }
+
+        public void AddAuthor(string author)
+        {
+            _blogPostSettings.Author = author;
+        }
+
+        public void AddDate(DateTime date)
+        {
+            _blogPostSettings.Date = date;
+        }
+
+        public void AddCategory(string category)
+        {
+            _blogPostSettings.Categories.Add(category);
+        }
+
+        public void AddTags(IEnumerable<string> tags)
+        {
+            _blogPostSettings.Tags = tags.ToList();
+        }
+
+        public void AddMetadataTitle(string title)
+        {
+            _blogPostSettings.MetadataTitle = title;
+        }
+
+        public void AddMetadataDescription(string description)
+        {
+            _blogPostSettings.MetaDescription = description;
+        }
+
+        public BlogPostSettings Build()
+        {
+            return _blogPostSettings;
+        }
+    }
+    class BlogPostDirector
+    {
+        public BlogPostDirector()
+        {
+            var blogPostBuilder = new BlogPostBuilder();
+
+            blogPostBuilder.AddTitle("My First Blog Post");
+            blogPostBuilder.AddContent("This is my first blog post");
+            blogPostBuilder.AddAuthor("John Doe");
+            blogPostBuilder.AddDate(DateTime.Now);
+            blogPostBuilder.AddCategory("C#");
+            blogPostBuilder.AddCategory("Programming");
+
+            var blogPostSettings = blogPostBuilder.Build();
+        }
+
+    }
+    internal class Program
+    {
+        public static void PrintTimeStamp(string name)
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            DateTime localDate = DateTime.Now;
+            var culture = new CultureInfo("ru-RU");
+            Console.WriteLine("   Дата та час компіляції: {0}", localDate.ToString(culture));
+            Console.WriteLine("   Автор: {0}", name);
+        }
+        static void Main(string[] args)
+        {
+            PrintTimeStamp("matv kud, 2П-22");
+
+            var blogPostBuilder = new BlogPostBuilder();
+
+            blogPostBuilder.AddTitle("My First Blog Post");
+            blogPostBuilder.AddContent("This is my first blog post content.");
+            blogPostBuilder.AddAuthor("John Doe");
+            blogPostBuilder.AddDate(DateTime.Now);
+            blogPostBuilder.AddCategory("C#");
+            blogPostBuilder.AddCategory("Programming");
+            blogPostBuilder.AddTags(new List<string> { "CSharp", "Coding", "Tutorial" });
+            blogPostBuilder.AddMetadataTitle("Learning C#");
+            blogPostBuilder.AddMetadataDescription("A beginner's guide to C# and programming concepts.");
+
+            var blogPost = blogPostBuilder.Build();
+
+            Console.WriteLine($"Title: {blogPost.Title}");
+            Console.WriteLine($"Content: {blogPost.Content}");
+            Console.WriteLine($"Author: {blogPost.Author}");
+            Console.WriteLine($"Date: {blogPost.Date}");
+            Console.WriteLine($"Categories: {string.Join(", ", blogPost.Categories)}");
+            Console.WriteLine($"Tags: {string.Join(", ", blogPost.Tags)}");
+            Console.WriteLine($"Metadata Title: {blogPost.MetadataTitle}");
+            Console.WriteLine($"Meta Description: {blogPost.MetaDescription}");
+        }
+    }
+}
