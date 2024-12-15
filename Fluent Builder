@@ -1,0 +1,155 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace marchenko_prak_1._1
+{
+
+    class BlogPostSettings
+    {
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public string Author { get; set; }
+        public DateTime Date { get; set; }
+        public IList<string> Categories { get; set; }
+        public IList<string> Tags { get; set; }
+        public string MetaDescription { get; set; }
+        public string MetadataTitle { get; set; }
+
+    }
+    interface IBlogPostBuilder
+    {
+        void WithTitle(string title);
+        void WithContent(string body);
+        void WithAuthor(string author);
+        void WithDate(DateTime date);
+        void WithCategory(string category);
+        void WithTags(IEnumerable<string> tags);
+        void WithMetadataTitle(string title);
+        void WithMetadataDescription(string description);
+        BlogPostSettings Build();
+    }
+    class FluentBlogPostBuilder
+    {
+        private readonly BlogPostSettings _blogPostSettings = new BlogPostSettings();
+
+        public FluentBlogPostBuilder()
+        {
+            _blogPostSettings.Categories = new List<string>();
+            _blogPostSettings.Tags = new List<string>();
+        }
+
+        public FluentBlogPostBuilder WithTitle(string title)
+        {
+            _blogPostSettings.Title = title;
+            return this;
+        }
+
+        public FluentBlogPostBuilder WithContent(string body)
+        {
+            _blogPostSettings.Content = body;
+            return this;
+        }
+
+        public FluentBlogPostBuilder WithAuthor(string author)
+        {
+            _blogPostSettings.Author = author;
+            return this;
+        }
+
+        public FluentBlogPostBuilder WithDate(DateTime date)
+        {
+            _blogPostSettings.Date = date;
+            return this;
+        }
+
+        public FluentBlogPostBuilder WithCategory(string category)
+        {
+            _blogPostSettings.Categories.Add(category);
+            return this;
+        }
+
+        public FluentBlogPostBuilder WithTags(IEnumerable<string> tags)
+        {
+            _blogPostSettings.Tags = tags.ToList();
+            return this;
+        }
+
+        public FluentBlogPostBuilder WithMetadataTitle(string title)
+        {
+            _blogPostSettings.MetadataTitle = title;
+            return this;
+        }
+
+        public FluentBlogPostBuilder WithMetadataDescription(string description)
+        {
+            _blogPostSettings.MetaDescription = description;
+            return this;
+        }
+
+        public BlogPostSettings Build()
+        {
+            return _blogPostSettings;
+        }
+    }
+
+    class BlogPostDirector
+    {
+        public BlogPostDirector()
+        {
+            var blogPostBuilder = new FluentBlogPostBuilder();
+
+            blogPostBuilder.WithTitle("My First Blog Post");
+            blogPostBuilder.WithContent("This is my first blog post");
+            blogPostBuilder.WithAuthor("John Doe");
+            blogPostBuilder.WithDate(DateTime.Now);
+            blogPostBuilder.WithCategory("C#");
+            blogPostBuilder.WithCategory("Programming");
+
+            var blogPostSettings = blogPostBuilder.Build();
+        }
+
+    }
+    internal class Program
+    {
+        public static void PrintTimeStamp(string name)
+        {
+            Console.OutputEncoding = Encoding.UTF8;
+            DateTime localDate = DateTime.Now;
+            var culture = new CultureInfo("ru-RU");
+            Console.WriteLine("   Дата та час компіляції: {0}", localDate.ToString(culture));
+            Console.WriteLine("   Автор: {0}", name);
+        }
+        static void Main(string[] args)
+        {
+            PrintTimeStamp("matv kud, 2П-22");
+
+            var blogPostBuilder = new FluentBlogPostBuilder();
+
+            var blogPost = blogPostBuilder
+                .WithTitle("My First Blog Post")
+                .WithContent("This is my first blog post")
+                .WithAuthor("John Doe")
+                .WithDate(DateTime.Now)
+                .WithCategory("C#")
+                .WithCategory("Programming")
+                .WithTags(new List<string>() { "blog", "software" })
+                .WithMetadataDescription("This is my first blog post")
+                .WithMetadataTitle("Read why my first blog post is super important")
+                .Build();
+
+            Console.WriteLine($"Title: {blogPost.Title}");
+            Console.WriteLine($"Content: {blogPost.Content}");
+            Console.WriteLine($"Author: {blogPost.Author}");
+            Console.WriteLine($"Date: {blogPost.Date}");
+            Console.WriteLine($"Categories: {string.Join(", ", blogPost.Categories)}");
+            Console.WriteLine($"Tags: {string.Join(", ", blogPost.Tags)}");
+            Console.WriteLine($"Metadata Title: {blogPost.MetadataTitle}");
+            Console.WriteLine($"Meta Description: {blogPost.MetaDescription}");
+            Console.ReadLine();
+        }
+    }
+}
