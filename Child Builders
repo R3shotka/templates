@@ -1,0 +1,185 @@
+using System;
+using System.Collections.Generic;
+
+
+class Chapter
+{
+    public string Title { get; set; }
+    public string Content { get; set; }
+    public string OpeningQuote { get; set; }
+}
+
+
+class Book
+{
+    public string Title { get; set; }
+    public string Author { get; set; }
+    public string Publisher { get; set; }
+    public IList<Chapter> Chapters { get; set; }
+}
+
+
+interface IBookBuilder
+{
+    BookCoverBuilder AddBookCover();
+    BookChapterBuilder AddChapter();
+    Book Build();
+}
+
+
+class BookBuilder : IBookBuilder
+{
+    private readonly Book _book = new Book();
+
+
+    public BookBuilder()
+    {
+        _book.Chapters = new List<Chapter>();
+    }
+
+
+    public BookCoverBuilder AddBookCover()
+    {
+        return new BookCoverBuilder(this, _book);
+    }
+
+
+    public BookChapterBuilder AddChapter()
+    {
+        return new BookChapterBuilder(this, _book);
+    }
+
+
+    public Book Build()
+    {
+        return _book;
+    }
+}
+
+
+class BookCoverBuilder
+{
+    private readonly BookBuilder _parentBookBuilder;
+    private readonly Book _book;
+
+
+    public BookCoverBuilder(BookBuilder parentBookBuilder, Book book)
+    {
+        _parentBookBuilder = parentBookBuilder;
+        _book = book;
+    }
+
+
+    public BookCoverBuilder WithTitle(string title)
+    {
+        _book.Title = title;
+        return this;
+    }
+
+
+    public BookCoverBuilder WithAuthor(string author)
+    {
+        _book.Author = author;
+        return this;
+    }
+
+
+    public BookCoverBuilder WithPublisher(string publisher)
+    {
+        _book.Publisher = publisher;
+        return this;
+    }
+
+
+    public BookChapterBuilder AddChapter()
+    {
+        return _parentBookBuilder.AddChapter();
+    }
+}
+
+
+class BookChapterBuilder
+{
+    private readonly BookBuilder _parentBookBuilder;
+    private readonly Book _book;
+    private readonly Chapter _chapter = new Chapter();
+
+
+    public BookChapterBuilder(BookBuilder parentBookBuilder, Book book)
+    {
+        _parentBookBuilder = parentBookBuilder;
+        _book = book;
+    }
+
+
+    public BookChapterBuilder WithTitle(string title)
+    {
+        _chapter.Title = title;
+        return this;
+    }
+
+
+    public BookChapterBuilder WithContent(string content)
+    {
+        _chapter.Content = content;
+        return this;
+    }
+
+
+    public BookChapterBuilder WithOpeningQuote(string openingQuote)
+    {
+        _chapter.OpeningQuote = openingQuote;
+        return this;
+    }
+
+
+    public BookChapterBuilder AddChapter()
+    {
+        _book.Chapters.Add(_chapter);
+        return _parentBookBuilder.AddChapter();
+    }
+
+
+    public Book Build()
+    {
+        _book.Chapters.Add(_chapter);
+        return _parentBookBuilder.Build();
+    }
+}
+
+
+class Program
+{
+    static void Main()
+    {
+        var book = new BookBuilder()
+            .AddBookCover()
+                .WithTitle("Builder book")
+                .WithAuthor("John Doe")
+                .WithPublisher("John Publisher")
+                .AddChapter()
+                    .WithTitle("Chapter 1")
+                    .WithContent("Chapter 1 content")
+                    .WithOpeningQuote("Life is like a box of chocolates, you never know what you're gonna get.")
+                    .AddChapter()
+                    .WithTitle("Chapter 2")
+                    .WithContent("Chapter 2 content")
+                    .WithOpeningQuote("If you are not willing to risk the usual you will have to settle for the ordinary.")
+                .Build();
+
+
+        Console.WriteLine($"Title: {book.Title}");
+        Console.WriteLine($"Author: {book.Author}");
+        Console.WriteLine($"Publisher: {book.Publisher}");
+        Console.WriteLine("Chapters:");
+        foreach (var chapter in book.Chapters)
+        {
+            Console.WriteLine($"  Title: {chapter.Title}");
+            Console.WriteLine($"  Content: {chapter.Content}");
+            Console.WriteLine($"  Opening Quote: {chapter.OpeningQuote}");
+            Console.WriteLine("Антоненко Анна");
+            Console.WriteLine($"Дата та час компіляції: {DateTime.Now}");
+            Console.ReadLine();
+        }
+    }
+}
